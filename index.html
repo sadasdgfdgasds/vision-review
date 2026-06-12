@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>计算机视觉复习 · 知识整理</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--accent:#4361ee;--accent-light:#eef0ff;--text:#1a1a2e;--text2:#555;--border:#e2e4ef;--green:#2ec4b6;--orange:#ff6b35;--red:#e63946;--radius:12px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+.header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;height:64px;padding:0 24px}
+.header h1{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:.3px}
+.header .hdr-sub{margin-left:12px;font-size:13px;color:var(--text2)}
+.header .hdr-badge{margin-left:auto;font-size:12px;background:var(--accent-light);color:var(--accent);padding:4px 14px;border-radius:20px;font-weight:600}
+.sidebar{position:fixed;top:64px;left:0;bottom:0;width:220px;background:var(--card);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0;z-index:50}
+.sidebar a{display:block;padding:8px 20px;font-size:13px;color:var(--text2);text-decoration:none;transition:all .15s;border-left:3px solid transparent}
+.sidebar a:hover,.sidebar a.active{color:var(--text);background:var(--accent-light);border-left-color:var(--accent)}
+.sidebar .sec-label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);padding:16px 20px 4px;letter-spacing:.5px}
+.sidebar .sec-label:first-of-type{padding-top:4px}
+.main{margin-left:220px;margin-top:64px;padding:32px 40px 80px;max-width:960px}
+.section{margin-bottom:48px}
+.section h2{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--accent-light)}
+.section h3{font-size:16px;font-weight:600;margin:20px 0 8px;color:var(--text)}
+.section p,.section li{font-size:14px;color:var(--text);margin-bottom:6px}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px 20px;margin-bottom:12px}
+.card:hover{box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card-row{display:flex;gap:8px;align-items:flex-start}
+.card-row .tag{flex-shrink:0;font-size:11px;font-weight:700;background:var(--accent-light);color:var(--accent);padding:2px 10px;border-radius:12px;margin-top:3px}
+.card-row .body{flex:1;min-width:0}
+.q-block{margin-bottom:12px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.q-q{background:var(--card);padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:14px;user-select:none}
+.q-q:hover{background:var(--accent-light)}
+.q-q .arrow{transition:transform .2s;font-size:12px;color:var(--text2)}
+.q-q.open .arrow{transform:rotate(180deg)}
+.q-a{background:#fafbfc;padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+.q-a.show{max-height:400px;padding:12px 16px}
+.q-a .ans{font-size:14px;color:var(--text)}
+.q-a .ans .label{font-weight:700;color:var(--accent)}
+.t-f .q-q .tru{color:var(--green);font-weight:700}
+.t-f .q-q .fls{color:var(--red);font-weight:700}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0;padding:24px 16px 80px}.grid-2{grid-template-columns:1fr}}
+.note{background:#fff8e1;border-left:3px solid #ffb300;padding:8px 14px;margin:12px 0;font-size:13px;border-radius:0 6px 6px 0}
+</style>
+</head>
+<body>
+<div class=header>
+  <h1>📖 计算机视觉复习</h1>
+  <span class=hdr-sub>知识整理</span>
+  <span class=hdr-badge>2 份文档 · 整理完成</span>
+</div>
+<nav class=sidebar id=sidebar></nav>
+<div class=main id=main></div>
+<script>
+const data={sections:[
+{id:"overview",label:"OpenCV 概述",items:[
+{t:"内容",h:[
+{q:"OpenCV 全称",a:"开源计算机视觉库（Open Source Computer Vision Library）"},
+{q:"创建年份 / 创建者",a:"1999 年，由 Intel 公司的加里·布拉德斯基（Gary Bradski）创建"},
+{q:"许可变更",a:"从 4.5.0 版开始，由 BSD 许可改为 Apache 2 许可"},
+{q:"实现语言",a:"C 语言函数 + C++ 类构成"},
+{q:"Python 调用本质",a:"后台运行实际 C++ 代码，速度与原始 C/C++ 一样快"},
+{q:"Python 创立者",a:"吉多·范罗苏姆（Guido van Rossum）"}]},
+{t:"主要功能",h:[{q:"OpenCV 主要功能有哪些？",a:"内置数据结构和输入/输出、图像处理、GUI、视频分析、3D 重建、特征提取、对象检测、机器学习、深度学习、计算摄影、形态分析、脸检测和识别、表面匹配、文本检测和识别"}]},
+{t:"核心模块",h:[
+{q:"core 模块",a:"各种基本的数据结构"},
+{q:"imgcodecs 模块",a:"图像的读写功能"},
+{q:"imgproc 模块",a:"图像处理操作"},
+{q:"highgui 模块",a:"GUI 操作"},
+{q:"ml 模块",a:"机器学习功能（kNN、SVM、k-means）"},
+{q:"dnn 模块",a:"深度学习（3.1 引入贡献模块，3.3 迁入主库）"}]}]},
+
+{id:"numpy",label:"NumPy 基础",items:[
+{t:"数据类型",h:[{q:"无符号整数类型",a:"uint16"},{q:"复数类型",a:"complex64"},{q:"NumPy vs Python 数据类型",a:"NumPy 比 Python 支持更多数据类型和固定大小别名"}]},
+{t:"数组创建",h:[{q:"arange()",a:"创建等差数组，如 np.arange(12)"},{q:"ones()",a:"创建元素全 1 的数组（单位矩阵）"},{q:"array()",a:"由列表创建数组"},{q:"zeros()",a:"创建全 0 数组"}]},
+{t:"形状操作",h:[{q:"shape 属性",a:"查看或改变数组形状，如 a.shape=(3,-1)"},{q:"reshape()",a:"更改形状并返回新数组"},{q:"resize(refcheck=False)",a:"更改形状同时可改变元素个数"},{q:"ravel(order='F')",a:"按列优先展平为一维"}]},
+{t:"索引与运算",h:[{q:"NumPy 数组索引",a:"a[2,0] 获取第 3 行第 1 列"},{q:"Python 列表索引",a:"a[2][0]"},{q:"* 算符",a:"元素乘积"},{q:"@ 算符 / dot()",a:"矩阵乘积"}]}]},
+
+{id:"io-gui",label:"图像 I/O 与 GUI",items:[
+{t:"图像读写",h:[{q:"imread()",a:"读取图像到内存，支持 BMP/PNG/JPEG/TIFF"},{q:"imwrite()",a:"将数组写入文件"},{q:"imshow()",a:"窗口显示图像"}]},
+{t:"窗口管理",h:[{q:"namedWindow()",a:"创建窗口"},{q:"destroyAllWindows()",a:"关闭所有窗口"},{q:"destroyWindow(wname)",a:"关闭指定窗口"},{q:"resizeWindow()",a:"更改窗口大小"},{q:"waitKey([delay])",a:"delay=0 无限等待，返回 ASCII 或 -1"}]},
+{t:"绘图函数",h:[{q:"line()",a:"直线"},{q:"rectangle()",a:"矩形"},{q:"circle()",a:"圆"},{q:"ellipse()",a:"椭圆"},{q:"polylines()",a:"多边形"},{q:"putText()",a:"文本（不能绘制汉字）"},{q:"thickness=-1",a:"填充图形"}]},
+{t:"鼠标事件",h:[{q:"回调函数",a:"用户命名，获取坐标，可传自定义数据"},{q:"setMouseCallback()",a:"绑定回调到窗口"},{q:"可检测",a:"拖动、按键、Alt/Ctrl/Shift"}]},
+{t:"跟踪栏",h:[{q:"createTrackbar()",a:"创建滑块工具"},{q:"返回值",a:"整数"}]}]},
+
+{id:"color-transform",label:"色彩空间与几何变换",items:[
+{t:"色彩空间",h:[{q:"色彩空间定义",a:"图像在计算机内部的存储方式，常见 RGB/GRAY/XYZ/YCrCb/HSV"},{q:"OpenCV 默认格式",a:"BGR（不是 RGB）"},{q:"灰度级范围",a:"0(黑)~255(白)"},{q:"COLOR_BGR2GRAY",a:"BGR→灰度"},{q:"COLOR_BGR2HSV",a:"BGR→HSV"},{q:"COLOR_BGR2YCrCb",a:"BGR→YCrCb"}]},
+{t:"通道操作",h:[{q:"拆分通道",a:"数组索引 比 cv2.split() 效率高"},{q:"合并通道",a:"cv2.merge()"},{q:"img.shape",a:"(高, 宽, 通道数)"}]},
+{t:"几何变换",h:[{q:"resize()",a:"缩放"},{q:"flip()",a:"翻转"},{q:"warpAffine()",a:"仿射变换（平行线仍平行）"},{q:"warpPerspective()",a:"透视变换（直线仍为直线）"},{q:"平移矩阵 M",a:"[[1,0,m],[0,1,n]]"},{q:"getRotationMatrix2D()",a:"计算旋转矩阵"},{q:"getAffineTransform()",a:"三点映射仿射矩阵"}]}]},
+
+{id:"filtering",label:"图像滤波",items:[
+{t:"均值滤波",h:[{q:"原理",a:"取邻域平均值替代中心点"},{q:"函数",a:"cv2.blur()"}]},
+{t:"高斯滤波",h:[{q:"原理",a:"按距离赋予权重（近大远小），加权求和"},{q:"函数",a:"cv2.GaussianBlur()"}]},
+{t:"方框滤波",h:[{q:"原理",a:"基于均值滤波，可选是否归一化"},{q:"函数",a:"cv2.boxFilter()"}]},
+{t:"中值滤波",h:[{q:"原理",a:"邻域像素排序取中间值"},{q:"函数",a:"cv2.medianBlur()"}]},
+{t:"双边滤波",h:[{q:"原理",a:"考虑距离和色差，去噪同时保护边缘"},{q:"函数",a:"cv2.bilateralFilter()"}]},
+{t:"2D 卷积",h:[{q:"函数",a:"cv2.filter2D() 自定义卷积核"}]}]},
+
+{id:"threshold",label:"阈值处理",items:[
+{t:"全局阈值处理",h:[{q:"定义",a:"大于阈值→255/0，其他→0/255"}]},
+{t:"阈值类型",h:[{q:"THRESH_BINARY",a:"大于阈值→255，其他→0"},{q:"THRESH_BINARY_INV",a:"大于阈值→0，其他→255"},{q:"THRESH_TRUNC",a:"大于阈值→阈值，其他不变"},{q:"THRESH_TOZERO",a:"大于阈值→0，其他不变"},{q:"THRESH_TOZERO_INV",a:"小于阈值→0，其他不变"},{q:"Otsu",a:"遍历所有阈值选最佳"},{q:"三角算法",a:"加 THRESH_TRIANGLE"}]},
+{t:"自适应阈值",h:[{q:"原理",a:"局部阈值处理，计算邻域加权平均值"},{q:"适用",a:"明暗差异大的图像"},{q:"函数",a:"cv2.adaptiveThreshold()"}]}]},
+
+{id:"morphology",label:"形态学操作",items:[
+{t:"基础",h:[{q:"内核",a:"NumPy 矩阵或 getStructuringElement()"}]},
+{t:"腐蚀",h:[{q:"原理",a:"内核部分在背景外→0；全在前景内→1。边界侵蚀，白色缩小"},{q:"函数",a:"cv2.erode()"}]},
+{t:"膨胀",h:[{q:"原理",a:"内核全在背景外→0；否则→1。边界扩张，白色增大"},{q:"函数",a:"cv2.dilate()"}]},
+{t:"高级形态操作",h:[{q:"开运算",a:"先腐蚀后膨胀，去噪"},{q:"闭运算",a:"先膨胀后腐蚀，填孔"},{q:"形态学梯度",a:"膨胀-腐蚀，求边界"},{q:"礼帽",a:"原图-开运算"},{q:"黑帽",a:"闭运算-原图"},{q:"通用函数",a:"cv2.morphologyEx()"}]}]},
+
+{id:"edge-contour",label:"边缘检测与轮廓",items:[
+{t:"边缘检测",h:[{q:"Laplacian（二阶导数）",a:"卷积拉普拉斯核，计算差值。cv2.Laplacian()"},{q:"Sobel（一阶导数）",a:"高斯滤波+微分。cv2.Sobel()。一阶算子：Roberts/Prewitt/Sobel"},{q:"Canny（5 步）",a:"①高斯去噪 ②Sobel 计算梯度 ③非最大值抑制 ④双阈值去假阳性 ⑤分析连接性。cv2.Canny()"}]},
+{t:"轮廓查找",h:[{q:"findContours()",a:"从二值图像查轮廓，返回 list"},{q:"轮廓层次",a:"[下一个, 前一个, 第一个子级, 父级]"},{q:"drawContours()",a:"绘制轮廓"}]},
+{t:"轮廓属性",h:[{q:"moments()→m00",a:"轮廓面积"},{q:"contourArea()",a:"面积"},{q:"arcLength()",a:"长度"},{q:"approxPolyDP()",a:"近似多边形"},{q:"convexHull()",a:"凸包"},{q:"boundingRect()",a:"直边界矩形"},{q:"minAreaRect()",a:"旋转矩形（最小面积）"},{q:"fitEllipse()",a:"拟合椭圆"},{q:"fitLine()",a:"拟合直线"}]},
+{t:"霍夫变换",h:[{q:"HoughLines()",a:"检测直线"},{q:"HoughLinesP()",a:"概率霍夫检测直线"},{q:"HoughCircles()",a:"检测圆"}]}]},
+
+{id:"histogram",label:"直方图",items:[
+{t:"基本概念",h:[{q:"定义",a:"统计每个灰度级出现次数。横轴[0,255]，纵轴像素数"},{q:"RANGE",a:"统计的灰度级范围 [0,255]"},{q:"BINS",a:"灰度级分组数量"},{q:"DIMS",a:"采集参数数量，灰度直方图=1"}]},
+{t:"函数",h:[{q:"calcHist()",a:"返回 2 维直方图"},{q:"hist() (plt)",a:"matplotlib 绘制直方图"},{q:"histogram() (np)",a:"np.histogram(src,bins,range)"}]},
+{t:"均衡化",h:[{q:"equalizeHist()",a:"普通全局均衡化"},{q:"自适应均衡化",a:"分块均衡化"},{q:"CLAHE",a:"限制对比度自适应均衡化。cv2.createCLAHE()"}]}]},
+
+{id:"matching-seg",label:"模板匹配与图像分割",items:[
+{t:"模板匹配",h:[{q:"matchTemplate()",a:"执行匹配；result 大小为(W-w+1, H-h+1)"},{q:"方差匹配",a:"值越接近 0 越匹配"},{q:"相关性匹配",a:"完全匹配值很大"},{q:"归一化相关系数匹配",a:"完全匹配→1，完全不匹配→0，完全负相关→-1"}]},
+{t:"分水岭算法",h:[{q:"原理",a:"将灰度图视为地形，在不同山谷注水，汇合处建水坝"},{q:"步骤",a:"①转灰度 ②开运算+膨胀确定背景 ③距离变换+阈值确定前景 ④确定未知区域 ⑤标记背景 ⑥执行分水岭"},{q:"watershed()",a:"执行分水岭"}]},
+{t:"图像金字塔",h:[{q:"定义",a:"底部为原图，梯次向下采样"},{q:"高斯金字塔",a:"pyrDown()→向下采样；pyrUp()→向上"},{q:"拉普拉斯金字塔",a:"第 n 层 = 高斯第 n 层 - 第 n+1 层向上采样结果"}]},
+{t:"GrabCut",h:[{q:"步骤",a:"①矩形指定前景 ②首次提取 ③人工标注黑白掩模 ④再次提取"},{q:"返回值",a:"0=背景,1=前景,2=可能背景,3=可能前景"}]}]},
+
+{id:"feature",label:"特征检测与匹配",items:[
+{t:"角检测",h:[{q:"Harris",a:"cornerHarris() 检测"},{q:"cornerSubPix()",a:"精确化角位置"},{q:"Shi-Tomasi",a:"goodFeaturesToTrack() 返回 N 个最强角"}]},
+{t:"FAST",h:[{q:"原理",a:"16 像素判断是否为关键点"},{q:"创建方式",a:"FastFeatureDetector_create()→detect()"},{q:"关键点信息",a:"角度、坐标、响应强度、邻域大小。不包含距离"}]},
+{t:"SIFT / ORB",h:[{q:"SIFT",a:"尺度不变特征变换。cv2.SIFT_create()"},{q:"ORB",a:"FAST+BRIEF 改进。cv2.ORB_create()"}]},
+{t:"特征匹配",h:[{q:"BFMatcher",a:"暴力匹配器，逐一比较取距离最小"},{q:"match()",a:"返回每个关键点的最佳匹配"},{q:"knnMatch()",a:"返回指定数量最佳匹配"},{q:"FLANN",a:"近似最近邻匹配，比最近邻更快"},{q:"findHomography()",a:"透视变换获得目标位置"}]}]},
+
+{id:"face",label:"人脸检测与识别",items:[
+{t:"人脸检测",h:[{q:"Haar 级联分类器",a:"载入预训练 xml；可检测人脸、猫脸、多张人脸；需转灰度"},{q:"CascadeClassifier()",a:"加载分类器"},{q:"detectMultiScale()",a:"执行检测"},{q:"DNN 检测",a:"Caffe/TensorFlow 预训练模型；步骤：加载→blob→setInput→forward→筛选"}]},
+{t:"EigenFaces",h:[{q:"原理",a:"PCA（主成分分析）降维"},{q:"步骤",a:"①EigenFaceRecognizer_create() ②train() ③predict()"}]},
+{t:"FisherFaces",h:[{q:"原理",a:"LDA（线性判别分析）"},{q:"步骤",a:"①FisherFaceRecognizer_create() ②train() ③predict()"}]},
+{t:"LBPH",h:[{q:"原理",a:"周围 8 像素比较→8 位二进制→十进制 LBP 值→直方图即 LBPH"},{q:"步骤",a:"①LBPHFaceRecognizer_create() ②train() ③predict()"}]}]},
+
+{id:"ml-dl",label:"机器学习与深度学习",items:[
+{t:"ML 基础",h:[{q:"ML 四步骤",a:"输入→特征提取→分类→输出"}]},
+{t:"kNN",h:[{q:"原理",a:"找 k 个最近邻居判定类别"},{q:"步骤",a:"①KNearest_create() ②train() ③findNearest()"}]},
+{t:"SVM",h:[{q:"原理",a:"决策边界分割数据；非线性可升维"},{q:"HOG+SVM",a:"HOG 作为特征向量分类"}]},
+{t:"k-means",h:[{q:"原理",a:"根据密集程度找质心"}]},
+{t:"DL",h:[{q:"DL 三步骤",a:"输入→特征提取与分类→输出（合并 ML 两步）"},{q:"dnn 模块",a:"前馈推理，支持 Caffe/TensorFlow/Torch/ONNX"},{q:"ResNet",a:"神经网络可达上百层"},{q:"DL 识别步骤",a:"①加载模型 ②图像→blob ③设输入 ④预测 ⑤处理结果"}]}]},
+
+{id:"questions-mc",label:"选择题（点击展开答案）",items:[
+{t:"OpenCV 创建于哪一年？",a:"C、1999"},
+{t:"图像读写模块？",a:"B、imgcodecs"},
+{t:"OpenCV 语言？",a:"B、C/C++"},
+{t:"NumPy 无符号整数类型？",a:"B、uint16"},
+{t:"创建单位矩阵的函数？",a:"D、ones()"},
+{t:"图像写入文件函数？",a:"C、imwrite()"},
+{t:"绘制椭圆函数？",a:"C、ellipse()"},
+{t:"透视变换函数？",a:"D、warpPerspective()"},
+{t:"截断阈值参数？",a:"C、THRESH_TRUNC"},
+{t:"轮廓查找错误的是？",a:"C（返回所有轮廓列表，不是图像中所有轮廓）"},
+{t:"返回轮廓长度？",a:"A、arcLength()"},
+{t:"检测直线？",a:"D、HoughLines()"},
+{t:"返回 2 维直方图？",a:"B、calcHist()"},
+{t:"分水岭不会执行？",a:"D、删除背景"},
+{t:"Shi-Tomasi 角检测？",a:"C、goodFeaturesToTrack()"},
+{t:"不绘制关键点的参数？",a:"D、NOT_DRAW_SINGLE_POINTS"},
+{t:"a=np.arange(12) 后不能正确执行？",a:"B、a.reshape((2,3))"},
+{t:"设置填充图形参数？",a:"B、thickness"},
+{t:"鼠标回调函数错误的是？",a:"D（不能检测修饰键——实际可以）"},
+{t:"考虑距离和色差的滤波？",a:"B、bilateralFilter()"},
+{t:"Apache 2 起始版本？",a:"D、4.5.0"},
+{t:"ML 功能模块？",a:"C、ml"},
+{t:"NumPy 复数类型？",a:"C、complex64"},
+{t:"矩阵乘法运算符？",a:"D、@"},
+{t:"BGR→GRAY 参数？",a:"B、COLOR_BGR2GRAY"},
+{t:"中值滤波函数？",a:"C、medianBlur()"},
+{t:"m00 表示？",a:"A、轮廓面积"},
+{t:"拟合椭圆函数？",a:"B、fitEllipse()"},
+{t:"模板匹配错误的是？",a:"C（匹配值越大越匹配——不同方法不同）"},
+{t:"grabCut 前景标志？",a:"B、1"},
+{t:"FAST 不包含？",a:"D、距离"},
+{t:"Haar 级联错误的是？",a:"B（检测彩色图像——需灰度）"},
+{t:"不能转一维？",a:"C、ones()"},
+{t:"图像加法错误的是？",a:"C（+和add结果相同）"},
+{t:"跟踪栏错误的是？",a:"D（回调不能接受数据）"},
+{t:"warpAffine 不能实现？",a:"D、扭曲"},
+{t:"数组 7 的索引？",a:"A、a[2,0]"},
+{t:"列表 7 的索引？",a:"A、a[2][0]"}]},
+
+{id:"questions-tf",label:"判断题（点击显示正误）",items:[
+{t:"均值滤波用平均值替代当前点",v:1},{t:"THRESH_BINARY_INV 大于阈值设255",v:0},{t:"OpenCV 默认 RGB",v:0},{t:"+ 和 subtract 都用于加法",v:0},{t:"putText 能绘汉字",v:0},{t:"OpenCV 由 Google 创建",v:0},{t:"core 模块实现数据结构",v:1},{t:"OpenCV 由 C 和 C++ 构成",v:1},{t:"4.5.0 起 Apache 2",v:1},{t:"Python 乔布斯创建",v:0},{t:"NumPy 支持更多数据类型",v:1},{t:"arange(5,6) 结果为 [0,1,2,3,4,5]",v:0},{t:"ones() 创建单位矩阵",v:1},{t:"reshape 返回新数组",v:1},{t:"resize refcheck=False 可改元素数",v:1},{t:"shape(512,512,3) 为宽高通道",v:0},{t:"灰度 0=白 255=黑",v:0},{t:"+ 和 add 都用于加法",v:1},{t:"鼠标事件含拖动按键",v:1},{t:"仿射变换平行线仍平行",v:1},{t:"透视变换直线仍直线",v:1},{t:"高斯滤波中心权重小",v:0},{t:"FAST 含距离",v:0},{t:"COLOR_BGR2GRAY 转灰度",v:1},{t:"ml 模块 ML 功能",v:1}]},
+
+{id:"questions-fill",label:"填空题（点击显示答案）",items:[
+{t:"均值滤波用 N×N 点的____替代当前点",a:"平均值"},
+{t:"reshape() 返回____",a:"新数组"},
+{t:"平移 dst(x,y)=____",a:"src(x+m, y+n)"},
+{t:"中值滤波取____",a:"中间值"},
+{t:"一阶导数算子：____、____、____",a:"Roberts、Prewitt、Sobel"},
+{t:"直方图 0=____，255=____",a:"黑色，白色"},
+{t:"ML 四步骤包含____",a:"特征提取"},
+{t:"result 大小 (W-w+1, ____)",a:"H-h+1"},
+{t:"a.shape=(2,-1) 形成____行____列",a:"2, 4"},
+{t:"np.ravel(a,order='F') 按____优先",a:"列"},
+{t:"img[h2:,:,:]=0 设____半为黑",a:"下"}]}]};
+
+const sidebar=document.getElementById("sidebar");
+const main=document.getElementById("main");
+let navHTML='', contentHTML='';
+
+data.sections.forEach((sec,i)=>{
+  const isQ=sec.id.startsWith("questions-");
+  navHTML+='<div class=sec-label>'+(isQ?'📝 题库':'📖 '+sec.label)+'</div>';
+  sec.items.forEach((item,j)=>{
+    const lid=sec.id+'-'+j;
+    const label=isQ?(item.t||item.q||''):'· '+item.t;
+    navHTML+='<a href="#'+lid+'">'+label+'</a>';
+  });
+});
+sidebar.innerHTML=navHTML;
+
+function renderSection(sec){
+  const isQ=sec.id.startsWith("questions-");
+  let html='<div class=section id="'+sec.id+'"><h2>'+(isQ?'📝 ':'')+sec.label+'</h2>';
+  sec.items.forEach((item,idx)=>{
+    const lid=sec.id+'-'+idx;
+    if(isQ){
+      if(sec.id==='questions-tf'){
+        const v=item.v===1?'✅ 正确':'❌ 错误';
+        const cls=item.v===1?'tru':'fls';
+        html+='<div class=q-block id="'+lid+'"><div class=q-q onclick="toggle(this)"><span>'+item.t+'</span><span class="arrow '+cls+'">'+v+'</span></div></div>';
+      } else {
+        html+='<div class=q-block id="'+lid+'"><div class=q-q onclick="toggle(this)"><span>'+item.t+'</span><span class=arrow>▼</span></div><div class=q-a><div class=ans><span class=label>答案：</span>'+item.a+'</div></div></div>';
+      }
+    } else {
+      if(item.t) html+='<h3>'+item.t+'</h3>';
+      if(item.h){
+        html+='<div class="grid-2">';
+        item.h.forEach(k=>{
+          html+='<div class=card><div class=card-row><span class=tag>要点</span><div class=body><strong>'+(k.q||'')+'</strong><br><span>'+(k.a||'')+'</span></div></div></div>';
+        });
+        html+='</div>';
+      }
+    }
+  });
+  html+='</div>';
+  return html;
+}
+
+data.sections.forEach(sec=>{contentHTML+=renderSection(sec);});
+main.innerHTML=contentHTML;
+
+function toggle(el){
+  const parent=el.closest('.q-block');
+  const answer=parent.querySelector('.q-a');
+  const arrow=el.querySelector('.arrow');
+  if(answer){
+    if(answer.classList.contains('show')){
+      answer.classList.remove('show'); el.classList.remove('open');
+    } else {
+      answer.classList.add('show'); el.classList.add('open');
+    }
+  }
+}
+
+const links=sidebar.querySelectorAll('a');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id);});
+    }
+  });
+},{threshold:.3,rootMargin:'-80px 0px'});
+document.querySelectorAll('.section').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
